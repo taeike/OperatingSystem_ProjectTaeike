@@ -3,6 +3,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import javax.swing.*;
+
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -16,114 +18,47 @@ public class ChatClient {
     ObjectOutputStream writer;	// 송신용 스트림
     Socket sock;				// 서버 연결용 소켓
     String user;				// 이 클라이언트로 로그인 한 유저의 이름
-    JButton logButton;			// 토글이 되는 로그인/로그아웃 버튼
+    JButton loginButton;			// 토글이 되는 로그인/로그아웃 버튼
+    JPanel loginPanel;
+    PosImageIcon LoginPanelImage = new PosImageIcon("LoginImage.jpg", 0, 0,1200 , 850);
+    JTextField nameText = new JTextField();
     
     public static void main(String[] args) {
        ChatClient client = new ChatClient();
-       client.go();
+       client.setUpGUI();
     }
 
-    private void go() {
+    private void setUpGUI() {
        // build GUI
 	   	frame = new JFrame(frameTitle + " : 로그인하세요");
-
-	   	// 메시지 디스플레이 창
-	   	incoming = new JTextArea(15,20);
-        incoming.setLineWrap(true);
-        incoming.setWrapStyleWord(true);
-        incoming.setEditable(false);
-        JScrollPane qScroller = new JScrollPane(incoming);
-        qScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        qScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        // 대화 상대 목록. 초기에는 "전체" - ChatMessage.ALL 만 있음
-        String[] list = {ChatMessage.ALL};
-        counterParts = new JList(list);
-        JScrollPane cScroller = new JScrollPane(counterParts);
-        cScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        cScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        counterParts.setVisibleRowCount(5);
-        counterParts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        counterParts.setFixedCellWidth(100);
-        
-        // 메시지 전송을 위한 버튼
-        JButton sendButton = new JButton("Send");
-        sendButton.addActionListener(new SendButtonListener());
-
-        // 메시지 디스플레이 창
-	   	outgoing = new JTextArea(5,20);
-	   	outgoing.setLineWrap(true);
-	   	outgoing.setWrapStyleWord(true);
-	   	outgoing.setEditable(true);
-        JScrollPane oScroller = new JScrollPane(outgoing);
-        oScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        oScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        // 로그인과 아웃을 담당하는 버튼. 처음에는 Login 이었다가 일단 로그인 되고나면 Logout으로 바뀜
-        logButton = new JButton("Login");
-        logButton.addActionListener(new LogButtonListener());
-
-	   	// GUI 배치
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        JPanel upperPanel = new JPanel();
-        upperPanel.setLayout(new BoxLayout(upperPanel, BoxLayout.X_AXIS));
-        upperPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
- 
-        JPanel lowerPanel = new JPanel();
-        lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.X_AXIS));
-        lowerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        
-        JPanel userPanel = new JPanel();
-        userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
-        
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
-        
-        userPanel.add(new JLabel("대화상대목록"));
-        userPanel.add(Box.createRigidArea(new Dimension(0,5)));
-        userPanel.add(cScroller);
-
-        inputPanel.add(new JLabel("메시지입력"));
-        inputPanel.add(Box.createRigidArea(new Dimension(0,5)));
-        inputPanel.add(oScroller);
-        
-        buttonPanel.add(sendButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(0,30)));
-        buttonPanel.add(logButton);
-
-        lowerPanel.add(userPanel);
-        lowerPanel.add(Box.createRigidArea(new Dimension(5,0)));
-        lowerPanel.add(inputPanel);
-        lowerPanel.add(Box.createRigidArea(new Dimension(10,0)));
-        lowerPanel.add(buttonPanel);
-
-        upperPanel.add(qScroller);
-        
-        mainPanel.add(upperPanel);
-        mainPanel.add(lowerPanel);
-
+	   	frame.setLayout(null);
+	    loginPanel = new JPanel(){
+	    	protected void paintComponent(Graphics arg0) {
+	    		LoginPanelImage.draw(arg0);
+	    	}
+	    };
+	    loginPanel.setLayout(null);
+	   	   
+	    nameText.setBounds(100, 100, 200, 50);
+	    loginPanel.add(nameText);
+	    
+	    loginButton = new JButton("Login");
+	    loginButton.setBounds(100,200,100,30);
+	    loginButton.addActionListener(new LogButtonListener());
+	    loginPanel.add(loginButton);
+	    
+	    
+	    frame.setBounds(100, 100, 1200, 850);
+	    loginPanel.setBounds(0, 0, 1200, 850);
+	    frame.add(loginPanel);	   
+	    frame.setVisible(true);
+	    
         // 네트워킹을 시동하고, 서버에서 메시지를 읽을 스레드 구동
         setUpNetworking();
         Thread readerThread = new Thread(new IncomingReader());
         readerThread.start();
-          
-        // 클라이언드 프레임 창 조정
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(BorderLayout.CENTER, mainPanel);
-        frame.setSize(400,500);
-        frame.setVisible(true);
-
-        // 프레임이 살아 있으므로 여기서 만들은 스레드는 계속 진행 됨
-        // 이 프레임 스레드를 종료하면, 이 프레임에서 만든 스레드들은 예외를 발생하게되고
-        // 이를 이용해 모든 스레드를 안전하게 종료 시키도록 함
-     } // close go
-
+         
+   }
    private void setUpNetworking() {  
 	   try {
 		   // sock = new Socket("220.69.203.11", 5000);		// 오동익의 컴퓨터
@@ -140,20 +75,18 @@ public class ChatClient {
    // 로그인과 아웃을 담당하는 버튼의 감청자. 처음에는 Login 이었다가 일단 로그인 되고나면 Logout을 처리
    private class LogButtonListener implements ActionListener {
       public void actionPerformed(ActionEvent ev) {
-    	  if (logButton.getText().equals("Login")) {
+   
     		  processLogin();
-    		  logButton.setText("Logout");
-    	  }
-    	  else
-    		  processLogout();
+    	
+  
       }
       // 로그인 처리
       private void processLogin() {
-    	  user = JOptionPane.showInputDialog("사용자 이름을 입력하세요");
+    
     	  try {
-       		  writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, user, "", ""));
+       		  writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, nameText.getText(), "", ""));
               writer.flush();
-              frame.setTitle(frameTitle + " (로그인 : " + user + ")");
+              frame.setTitle(frameTitle + " ( 로그인 : " +nameText.getText() + ")" );
        	  } catch(Exception ex) {
        		  JOptionPane.showMessageDialog(null, "로그인 중 서버접속에 문제가 발생하였습니다.");
        		  ex.printStackTrace();
@@ -210,7 +143,7 @@ public class ChatClient {
                	 if (type == ChatMessage.MsgType.LOGIN_FAILURE) {	 // 로그인이 실패한 경우라면
                		 JOptionPane.showMessageDialog(null, "Login이 실패하였습니다. 다시 로그인하세요");
     	             frame.setTitle(frameTitle + " : 로그인 하세요");
-    	             logButton.setText("Login");
+    	             loginButton.setText("Login");
                	 } else if (type == ChatMessage.MsgType.SERVER_MSG) { // 메시지를 받았다면 보여줌
                		 if (message.getSender().equals(user)) continue;  // 내가 보낸 편지면 보일 필요 없음
                		 incoming.append(message.getSender() + " : " + message.getContents() + "\n");
@@ -227,7 +160,14 @@ public class ChatClient {
                		 frame.repaint();
                	 } else if (type == ChatMessage.MsgType.NO_ACT){
                		 // 아무 액션이 필요없는 메시지. 그냥 스킵
-               	 } else {
+               	 } else if(type == ChatMessage.MsgType.PASSLOGIN){
+               		System.out.println("로그인을 하고 다음 화면으로 넘어감");            		
+               		GameStartButton_Panel gameStartPanel = new GameStartButton_Panel(frame);
+               	   	frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
+               		frame.getContentPane().add(gameStartPanel.panel); // 다시 등록
+               		frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )	
+               	 }
+               	 else {
                		 // 정체가 확인되지 않는 이상한 메시지
                		 throw new Exception("서버에서 알 수 없는 메시지 도착했음");
                	 }

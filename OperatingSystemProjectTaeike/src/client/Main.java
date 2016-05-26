@@ -15,9 +15,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import client.FirstButton_Panel;
+
 
 public class Main implements  ActionListener{//implements ActionListener{
-	Paint_Thread explan_Thread = new Paint_Thread();//게임설명을위해 만들어 놓은 쓰래드.
+
 	private Cursor cursor;//마우스에 이미지를 주기위한것
 	private Image img;
 	private Point point = new Point(0,0);
@@ -193,12 +195,6 @@ public class Main implements  ActionListener{//implements ActionListener{
 			next_Button1.next_BGM.stopPlayer();
 			layerPane.setLayer(Level4,23);
 		}
-		//*******************설명을 보여주는 쓰래드를 시작해준다*****************************************************
-		else if(e.getSource()==gameStartButton_Panel.explanation_Button){
-			explan_Thread.setUp();
-			explan_Thread.start();
-
-		}
 	}
 	class CountTimerAction implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
@@ -308,54 +304,4 @@ public class Main implements  ActionListener{//implements ActionListener{
 		}	
 	}//repaint
 
-	class Paint_Thread extends Thread implements Runnable{
-		Explan_Panel explan_Panel  = new Explan_Panel();
-		PosImageIcon explanation_1 = new PosImageIcon("설명1.jpg",0,0,1200,850);
-		PosImageIcon explanation_2 = new PosImageIcon("설명2.jpg",0,0,1200,850);
-		PosImageIcon explanation_3 = new PosImageIcon("설명3.jpg",0,0,1200,850);
-		PosImageIcon explanation_4 = new PosImageIcon("설명4.jpg",0,0,1200,850);
-		PosImageIcon explanation_5 = new PosImageIcon("설명5.jpg",0,0,1200,850);
-		int count = 1;
-		JFrame explan_Frame = new JFrame();
-  
-		public void setUp(){
-			explan_Frame.setSize(1200,880);
-			explan_Frame.setLocation(160,30);
-			explan_Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			explan_Frame.setLayout(null);
-			explan_Panel.setBounds(0,0,1200,850);
-			explan_Frame.add(explan_Panel);
-			explan_Frame.setTitle("놀이 규칙 설명");
-			explan_Frame.setResizable(false);
-			explan_Frame.setVisible(true);
-		}
-		public void run(){
-			System.out.println("들어옴2");
-			while(count<7){
-				try {
-					if(count>=1){explan_Panel.repaint();}
-					explan_Thread.sleep(5000);//몇초단위로 이미지를 넘길건지
-				} catch (Exception e2) {
-					System.out.println("못재움");
-				}
-			}
-		}
-		class Explan_Panel extends JPanel{
-			protected void paintComponent(Graphics g) {
-				System.out.println("들어옴1");
-				System.out.println(count);
-				if(count==1)      explanation_1.draw(g);
-				else if(count==2) explanation_2.draw(g);
-				else if(count==3) explanation_3.draw(g);
-				else if(count==4) explanation_4.draw(g);
-				else if(count==5) explanation_5.draw(g);
-				else if(count==6){
-					explan_Frame.setVisible(false);
-					explan_Frame=null;
-					explan_Thread=null;
-				}
-				count++;
-			}
-		}
-	}
 }//class

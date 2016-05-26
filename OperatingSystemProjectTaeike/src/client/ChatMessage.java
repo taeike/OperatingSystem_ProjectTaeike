@@ -1,5 +1,8 @@
 package client;
 import java.io.Serializable;
+import java.util.ArrayList;
+
+import javax.swing.JPanel;
 
 public class ChatMessage implements Serializable {
 	// 메시지 타입 정의
@@ -19,13 +22,14 @@ public class ChatMessage implements Serializable {
 	//		메시지포맷  : SERVER_MSG, "송신자", "", "내용" 
 	// 	- LOGIN_LIST : 현재 로그인한 사용자 리스트.
 	//		메시지 포맷 : LOGIN_LIST, "", "", "/로 구분된 사용자 리스트"
-	public enum MsgType {NO_ACT, LOGIN, LOGOUT, CLIENT_MSG, LOGIN_FAILURE, SERVER_MSG, LOGIN_LIST};
+	public enum MsgType {NO_ACT, LOGIN , PASSLOGIN, LOGOUT, CLIENT_MSG, LOGIN_FAILURE, SERVER_MSG, LOGIN_LIST};
 	public static final String ALL = "전체";	 // 사용자 명 중 자신을 제외한 모든 로그인되어 있는
 											 // 사용자를 나타내는 식별문
 	private MsgType type;
 	private String sender;
 	private String receiver;
 	private String contents;
+	private JPanel curPanel;
 
 	public ChatMessage() {
 		this(MsgType.NO_ACT, "", "", "");
@@ -36,9 +40,26 @@ public class ChatMessage implements Serializable {
 		receiver = rID;
 		contents = mesg;
 	}
+	public ChatMessage(MsgType t, String sID, String rID, String mesg , JPanel panel) {
+		type = t;
+		sender = sID;
+		receiver = rID;
+		contents = mesg;
+		curPanel = panel;
+	}
+	public ChatMessage(MsgType t, JPanel panel) {
+		type = t;
+		curPanel = panel;
+	}
 	
 	public void setType (MsgType t) {
 		type = t;
+	}
+	public JPanel getCurPanel() {
+		return curPanel;
+	}
+	public void setCurPanel(JPanel curPanel) {
+		this.curPanel = curPanel;
 	}
 	public MsgType getType() {
 		return type;

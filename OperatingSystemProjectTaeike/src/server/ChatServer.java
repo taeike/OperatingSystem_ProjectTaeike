@@ -3,6 +3,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.swing.JPanel;
+
 import client.ChatMessage;
 import client.ChatMessage.MsgType;
 
@@ -107,8 +109,19 @@ public class ChatServer {
 		   ex.printStackTrace();
 	   }
 	   // 해쉬테이블에 사용자-전송스트림 페어를 추가하고 새로운 로그인 리스트를 모두에게 알림
+	  
 	   clientOutputStreams.put(user, writer);
 	   // 새로운 로그인 리스트를 전체에게 보내 줌
+	   try {
+		   // 이미 동일한 이름의 사용자가 있다면, 현재의 로그인은 실패 한것으로 클라이언트에게 알림
+		   if (clientOutputStreams.containsKey(user)) {
+			   writer.writeObject(
+				   new ChatMessage(ChatMessage.MsgType.PASSLOGIN, "", "", "사용자 이미 있음"));
+			   return;
+		   }
+	   } catch (Exception ex) {
+		   ex.printStackTrace();
+	   }
 	   broadcastMessage(new ChatMessage(ChatMessage.MsgType.LOGIN_LIST, "", "", makeClientList()));
     }  // close handleLogin
 
