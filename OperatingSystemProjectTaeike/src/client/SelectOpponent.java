@@ -3,6 +3,8 @@ package client;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -14,11 +16,15 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 
 
 public class SelectOpponent {
@@ -33,16 +39,21 @@ public class SelectOpponent {
     String user;				// 이 클라이언트로 로그인 한 유저의 이름
     JButton logButton;			// 토글이 되는 로그인/로그아웃 버튼
     PosImageIcon selectOpImage = new PosImageIcon("selectOp.jpg", 0, 0, 1200, 850);
+    JPanel mainPanel;
+    String opponentName;
     
-    public SelectOpponent(JFrame frame){
+    public SelectOpponent(String user,JFrame frame,ObjectOutputStream writer){
+    	this.user = user;
     	this.frame = frame;
-    	this.setUpGUI();
+    	this.writer = writer;
+    	String[] list = {ChatMessage.ALL};
+    	counterParts = new JList(list);
     }
     
- 	private void setUpGUI(){
+ 	public void setUpGUI(){
     // 대화 상대 목록. 초기에는 "전체" - ChatMessage.ALL 만 있음
     String[] list = {ChatMessage.ALL};
-    counterParts = new JList(list);
+
     JScrollPane cScroller = new JScrollPane(counterParts);
     cScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     cScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -50,12 +61,32 @@ public class SelectOpponent {
     counterParts.setVisibleRowCount(5);
     counterParts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     counterParts.setFixedCellWidth(100);
-    
+    counterParts.addListSelectionListener(new ListSelectionListener() {
+		
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			//List 에서 선택된 플레이어의 String을 가져옴
+			opponentName = (String)  counterParts.getSelectedValue();
+		}
+	});
     // 메시지 전송을 위한 버튼
     JButton sendButton = new JButton("Send");
     sendButton.setBounds(1050, 350, 100, 50);
-
-    JPanel mainPanel = new JPanel(){
+    sendButton.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			//나랑 붙자
+			try {
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.SELECTPLAYER, user, opponentName, ""));
+				writer.flush();
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}	
+		}
+	});
+    
+   mainPanel = new JPanel(){
     	@Override
     	protected void paintComponent(Graphics g) {
     		// TODO Auto-generated method stub
@@ -71,7 +102,7 @@ public class SelectOpponent {
     lowerPanel.setLayout(null);
   
     mainPanel.add(sendButton);
-  
+    
  
     mainPanel.add( cScroller);
     mainPanel.setBounds(0, 0, 1200, 850);
@@ -86,4 +117,11 @@ public class SelectOpponent {
     // 이 프레임 스레드를 종료하면, 이 프레임에서 만든 스레드들은 예외를 발생하게되고
     // 이를 이용해 모든 스레드를 안전하게 종료 시키도록 함
  	}
+ 	
+ 	public void setCounterParts(String[] users){
+ 		counterParts.setListData(users);
+  		frame.repaint();
+ 	}
+ 	
+ 	
 }

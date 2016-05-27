@@ -14,7 +14,7 @@ import res.SoundPlayer;
 
 
 public class GameStartButton_Panel{
-
+	
 	Sec_1 sec_1 = new Sec_1();
 	Sec_2 sec_2 = new Sec_2();
 	Sec_3 sec_3 = new Sec_3();
@@ -24,11 +24,15 @@ public class GameStartButton_Panel{
 	ArrayList<PosImageIcon> imgList = new ArrayList<PosImageIcon>();
 	JPanel panel = new JPanel();
 	JFrame frame;
+	SelectOpponent so,tmp;
+	
 	int count=2;
 	
-	public GameStartButton_Panel(JFrame frame){
+	public GameStartButton_Panel(JFrame frame,SelectOpponent so){
 		this.frame = frame;
+		this.so = so;
 		this.setup_GUI();
+		
 	}
 	public void setup_GUI(){
 		imgList.add(new PosImageIcon("1초후게임시작.jpg", 0,0,1200,850));
@@ -41,9 +45,11 @@ public class GameStartButton_Panel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				 frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
-                 SelectOpponent so = new SelectOpponent(frame);
-                 frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )   
+				so.setUpGUI();
+				frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
+				frame.getContentPane().add(so.mainPanel); // 다시 등록
+                frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )   
+			
 			}
 		});
 		
@@ -131,4 +137,7 @@ public class GameStartButton_Panel{
 			imgList.get(2).draw(g);
 		}
 	}
+	
+	
+	
 }
