@@ -4,6 +4,7 @@ import java.net.*;
 import java.util.*;
 import java.util.Timer;
 
+import javax.naming.spi.DirStateFactory.Result;
 import javax.swing.*;
 
 import util.ChatMessage;
@@ -241,7 +242,7 @@ public class ChatClient {
 					}
 					else if(type == ChatMessage.MsgType.START){
 						Level1 = new Make_GamePanel("일단계 게임화면.jpg",70,"3단계 배경음악.wav",Level1_Point,Level1_Point_Size
-								,message.getReceiver(),message.getSender(),writer);
+								,message.getReceiver(),message.getSender(),writer,0,1);
 						startGame();
 					}
 					else if(type == ChatMessage.MsgType.GETPOINT){
@@ -251,7 +252,12 @@ public class ChatClient {
 						else Level4.displayPoint(message.getIndex()); 
 					}
 					else if(type == ChatMessage.MsgType.NEXT){
+						
 						changePanel(message.getSender(),message.getReceiver(),message.getIndex());
+					}
+					else if(type == ChatMessage.MsgType.ACCEPTOPSCORE){
+						Level4.sendNextState();
+						showResult(message);
 					}
 					else {
 						// 정체가 확인되지 않는 이상한 메시지
@@ -263,10 +269,27 @@ public class ChatClient {
 				System.out.println("클라이언트 스레드 종료");		// 프레임이 종료될 경우 이를 통해 스레드 종료
 			}
 		} // close run
+		private void showResult(ChatMessage message){
+			ResultPanel result;
+			System.out.println( message.getScore()+" ? "+ Level4.getScore());
+			if(message.getScore() < Level4.getScore()){
+				System.out.println("이김");
+				result = new ResultPanel("win", frame, message.getReceiver(), writer);
+			}
+			else{
+				result = new ResultPanel("lose", frame, message.getReceiver(), writer);
+			}
+			result.setBounds(0, 0, 1200, 850);
+			result.setLayout(null);
+			
+			frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
+			frame.getContentPane().add(result); // 다시 등록
+			frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )
+		}
 		private void changePanel(String sender,String receiver,int index){
 			
 			if(Level == 1){
-				Level2 = new Make_GamePanel("이단계 게임화면.jpg",70,"2단계 배경음악.wav",Level2_Point,Level2_Point_Size,receiver,sender,writer);
+				Level2 = new Make_GamePanel("이단계 게임화면.jpg",70,"2단계 배경음악.wav",Level2_Point,Level2_Point_Size,receiver,sender,writer,Level1.getScore(),2);
 				Level2.setUp();
 				Level2.progressBarTimer.start();
 				Level2.Level_BGM.startPlay();
@@ -278,7 +301,7 @@ public class ChatClient {
 				Level++;
 			}
 			else if(Level == 2){
-				Level3 = new Make_GamePanel("삼단계 게임화면.jpg",70,"1단계 배경음악.wav",Level3_Point,Level3_Point_Size,receiver,sender,writer);	
+				Level3 = new Make_GamePanel("삼단계 게임화면.jpg",70,"1단계 배경음악.wav",Level3_Point,Level3_Point_Size,receiver,sender,writer,Level2.getScore(),3);	
 				Level3.setUp();
 				Level3.progressBarTimer.start();
 				Level3.Level_BGM.startPlay();
@@ -290,7 +313,7 @@ public class ChatClient {
 				Level++;
 			}
 			else if(Level == 3){
-				Level4 = new Make_GamePanel("사단계 게임화면.jpg",70,"4단계 배경음악.wav",Level4_Point,Level4_Point_Size,receiver,sender,writer);
+				Level4 = new Make_GamePanel("사단계 게임화면.jpg",70,"4단계 배경음악.wav",Level4_Point,Level4_Point_Size,receiver,sender,writer,Level3.getScore(),4);
 				Level4.setUp();
 				Level4.progressBarTimer.start();
 				Level4.Level_BGM.startPlay();
@@ -300,11 +323,6 @@ public class ChatClient {
 				frame.getContentPane().add(Level4); // 다시 등록
 				frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )
 				Level++;
-			}
-			else{
-				frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
-				frame.getContentPane().add(gameStartPanel.panel); // 다시 등록
-				frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )
 			}
 		}
 		private void startGame(){

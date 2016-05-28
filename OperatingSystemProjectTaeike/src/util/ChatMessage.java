@@ -23,7 +23,7 @@ public class ChatMessage implements Serializable {
 	// 	- LOGIN_LIST : 현재 로그인한 사용자 리스트.
 	//		메시지 포맷 : LOGIN_LIST, "", "", "/로 구분된 사용자 리스트"
 	public enum MsgType {NO_ACT, LOGIN , PASSLOGIN, LOGOUT, CLIENT_MSG, LOGIN_FAILURE, SERVER_MSG, LOGIN_LIST,SELECTPLAYER,SELECTEDPLAYER
-		,REJECT,ACCEPT,REJECTED,START,POINT,GETPOINT,NEXT};
+		,REJECT,ACCEPT,REJECTED,START,POINT,GETPOINT,NEXT,SENDMYSCORE,ACCEPTOPSCORE};
 	public static final String ALL = "전체";	 // 사용자 명 중 자신을 제외한 모든 로그인되어 있는
 											 // 사용자를 나타내는 식별문
 	private MsgType type;
@@ -32,6 +32,9 @@ public class ChatMessage implements Serializable {
 	private String contents;
 	private JPanel curPanel;
 	private int index;
+	private int score;
+	private int level;
+	
 
 	public ChatMessage() {
 		this(MsgType.NO_ACT, "", "", "");
@@ -42,12 +45,31 @@ public class ChatMessage implements Serializable {
 		receiver = rID;
 		contents = mesg;
 	}
-	
+
 	public ChatMessage(MsgType t, String sID, String rID, int index){
 		type = t;
 		sender = sID;
 		receiver = rID;
 		this.index = index;
+	}
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
+	public int getLevel() {
+		return level;
+	}
+	public void setLevel(int level) {
+		this.level = level;
+	}
+	public ChatMessage(MsgType t, String sID, String rID, int score,int level){
+		type = t;
+		sender = sID;
+		receiver = rID;
+		this.score =score;
+		this.level = level;
 	}
 	
 	public int getIndex() {

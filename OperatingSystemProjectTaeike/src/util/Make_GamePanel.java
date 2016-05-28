@@ -57,9 +57,12 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 	private String user;
 	private String opponentName;
 	private ObjectOutputStream writer;
+	private int level;
+	private int flag=0;
 	//private ArrayList<Boolean> state_Point = new ArrayList<Boolean>();
 
-	public Make_GamePanel(String imgURL,int maxTime,String URL,int[][] Level_Point,int[][] Level_Point_Size,String sender,String reciver,ObjectOutputStream writer){
+	public Make_GamePanel(String imgURL,int maxTime,String URL,int[][] Level_Point,int[][] Level_Point_Size,
+			String sender,String reciver,ObjectOutputStream writer,int totalScore,int level){
 		img = new PosImageIcon(imgURL,0,100,1200,750);
 		progressBar = new ProgressiveBar(maxTime);
 		timeLabel = new JLabel(maxTime+"초");
@@ -71,11 +74,13 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		for(int i=0;i<7;i++){deduplication[i]=0;}
 		timeLabel.setForeground(Color.GRAY);
 		scoreLabel.setForeground(Color.GRAY);
+		this.totalScore = totalScore;
 		this.user = sender;
 		this.opponentName = reciver;
 		this.writer = writer;
+		this.level = level;
 		//timeLabel.setFont(new Font("1훈화양연화 R",Font.CENTER_BASELINE,15));
-	//	scoreLabel.setFont(new Font("1훈화양연화 R",Font.CENTER_BASELINE,15));
+		//	scoreLabel.setFont(new Font("1훈화양연화 R",Font.CENTER_BASELINE,15));
 	}	
 
 	public void setUp(){
@@ -150,9 +155,12 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 			point = e.getPoint();	//좌표받아오기
 			int x = (int) point.getX();
 			int y = (int) point.getY();
-													
+
 			//System.out.println("" + point.getX() + " " + point.getY());
 			if((x>613&&x<1174)&&(y>131&&y<750)){
+
+
+
 				if (find_Point(0, point)&&deduplication[0]==0) {											// 미리 틀린곳의 좌표를 배열에 넣고 내가 누른 좌표값을 비교한다.
 					sendClearPoint(0);
 					true_Sound.startPlay();
@@ -213,11 +221,12 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 					flase_Sound.startPlay();
 					totalScore-=5;
 				}
-				repaint();
-				
 				if(checkState()){
 					sendNextState();
-				}	
+				}
+				repaint();
+
+
 			}
 		}
 	}
@@ -323,13 +332,26 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		}
 
 	}//action
-	private void sendNextState(){
-		try {
-			writer.writeObject(new ChatMessage(ChatMessage.MsgType.NEXT, user,opponentName,""));
-			writer.flush();
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}	
+	public void sendNextState(){
+		if(flag==0){
+			flag++;
+			if(level != 4){
+				try {
+					writer.writeObject(new ChatMessage(ChatMessage.MsgType.NEXT, user,opponentName,totalScore,level));
+					writer.flush();
+				} catch(Exception ex) {
+					ex.printStackTrace();
+				}	
+			}
+			else{
+				try {
+					writer.writeObject(new ChatMessage(ChatMessage.MsgType.ACCEPTOPSCORE, user,opponentName,totalScore,level));
+					writer.flush();
+				} catch(Exception ex) {
+					ex.printStackTrace();
+				}	
+			}
+		}
 	}
 	private void sendClearPoint(int index){
 		try {
@@ -343,6 +365,9 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		isTrue[index] = true;
 		deduplication[index]++;
 		this.repaint();
+	}
+	public int getScore(){
+		return totalScore;
 	}
 }//class
 

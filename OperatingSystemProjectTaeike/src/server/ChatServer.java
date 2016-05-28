@@ -14,7 +14,9 @@ public class ChatServer {
 	// 나중에 특정 사용자에게 메시지를 보낼때 사용. 현재 접속해 있는 사용자의 전체 리스트를 구할때도 사용
 	HashMap<String, ObjectOutputStream> clientOutputStreams =
 			new HashMap<String, ObjectOutputStream>();
-		
+	HashMap<String, Integer> clientScore =
+			new HashMap<String, Integer>();
+	
 	public static void main (String[] args) {
 		new ChatServer().go();
 	}
@@ -97,6 +99,9 @@ public class ChatServer {
 					else if(type == ChatMessage.MsgType.NEXT){
 						sendNext(message.getSender(),message.getReceiver());
 					}
+					else if(type == ChatMessage.MsgType.ACCEPTOPSCORE){
+						finalNext(message);
+					}
 					
 					else {
 						// 정체가 확인되지 않는 이상한 메시지?
@@ -109,6 +114,15 @@ public class ChatServer {
 			}
 		} // close run
 	} // close inner class
+	private void finalNext(ChatMessage message){
+		ObjectOutputStream write = clientOutputStreams.get(message.getReceiver());
+		try {
+			write.writeObject(message);
+		} catch (Exception ex) {
+			System.out.println("S : 서버에서 송신 중 이상 발생");
+			ex.printStackTrace();
+		}
+	}
 	private void sendNext(String sender,String receiver){
 		ObjectOutputStream write = clientOutputStreams.get(receiver);
 		try {
@@ -188,8 +202,8 @@ public class ChatServer {
 		// 해쉬테이블에 사용자-전송스트림 페어를 추가하고 새로운 로그인 리스트를 모두에게 알림
 
 		clientOutputStreams.put(user, writer);
+		clientScore.put(user, 0);
 		// 새로운 로그인 리스트를 전체에게 보내 줌
-		System.out.println(clientOutputStreams.toString());
 		broadcastMessage(new ChatMessage(ChatMessage.MsgType.LOGIN_LIST, "", "", makeClientList()));
 	}  // close handleLogin
 
