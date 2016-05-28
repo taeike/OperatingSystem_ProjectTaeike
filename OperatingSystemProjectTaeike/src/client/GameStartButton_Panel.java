@@ -11,13 +11,10 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import res.SoundPlayer;
+import util.PosImageIcon;
 
 
 public class GameStartButton_Panel{
-	
-	Sec_1 sec_1 = new Sec_1();
-	Sec_2 sec_2 = new Sec_2();
-	Sec_3 sec_3 = new Sec_3();
 	
 	JButton gameStartButton = new JButton(new ImageIcon("놀이시작하기.jpg"));
 	JButton explanation_Button = new JButton(new ImageIcon("놀이설명.jpg"));
@@ -34,11 +31,7 @@ public class GameStartButton_Panel{
 		this.setup_GUI();
 		
 	}
-	public void setup_GUI(){
-		imgList.add(new PosImageIcon("1초후게임시작.jpg", 0,0,1200,850));
-		imgList.add(new PosImageIcon("2초후게임시작.jpg", 0,0,1200,850));
-		imgList.add(new PosImageIcon("3초후게임시작.jpg", 0,0,1200,850));	
-		
+	public void setup_GUI(){	
 		gameStartButton.setSize(600,850);
 		gameStartButton.setLocation(0,0);
 		gameStartButton.addActionListener(new ActionListener(){
@@ -48,8 +41,7 @@ public class GameStartButton_Panel{
 				so.setUpGUI();
 				frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
 				frame.getContentPane().add(so.mainPanel); // 다시 등록
-                frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )   
-			
+                frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )   	
 			}
 		});
 		
@@ -121,23 +113,4 @@ public class GameStartButton_Panel{
 			}
 		}
 	}
-
-	class Sec_1 extends JPanel {
-		protected void paintComponent(Graphics g) {
-			imgList.get(0).draw(g);
-		}
-	}
-	class Sec_2 extends JPanel {
-		protected void paintComponent(Graphics g) {
-			imgList.get(1).draw(g);
-		}
-	}
-	class Sec_3 extends JPanel {
-		protected void paintComponent(Graphics g) {
-			imgList.get(2).draw(g);
-		}
-	}
-	
-	
-	
 }

@@ -10,6 +10,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import util.ChatMessage;
+import util.PosImageIcon;
+
 public class AnswerWindow extends JFrame{
 	
 	private JPanel panel;

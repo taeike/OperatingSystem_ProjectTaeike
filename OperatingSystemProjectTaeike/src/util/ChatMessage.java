@@ -1,4 +1,4 @@
-package client;
+package util;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -23,7 +23,7 @@ public class ChatMessage implements Serializable {
 	// 	- LOGIN_LIST : 현재 로그인한 사용자 리스트.
 	//		메시지 포맷 : LOGIN_LIST, "", "", "/로 구분된 사용자 리스트"
 	public enum MsgType {NO_ACT, LOGIN , PASSLOGIN, LOGOUT, CLIENT_MSG, LOGIN_FAILURE, SERVER_MSG, LOGIN_LIST,SELECTPLAYER,SELECTEDPLAYER
-		,REJECT,ACCEPT,REJECTED,START};
+		,REJECT,ACCEPT,REJECTED,START,POINT,GETPOINT,NEXT};
 	public static final String ALL = "전체";	 // 사용자 명 중 자신을 제외한 모든 로그인되어 있는
 											 // 사용자를 나타내는 식별문
 	private MsgType type;
@@ -31,6 +31,7 @@ public class ChatMessage implements Serializable {
 	private String receiver;
 	private String contents;
 	private JPanel curPanel;
+	private int index;
 
 	public ChatMessage() {
 		this(MsgType.NO_ACT, "", "", "");
@@ -42,6 +43,19 @@ public class ChatMessage implements Serializable {
 		contents = mesg;
 	}
 	
+	public ChatMessage(MsgType t, String sID, String rID, int index){
+		type = t;
+		sender = sID;
+		receiver = rID;
+		this.index = index;
+	}
+	
+	public int getIndex() {
+		return index;
+	}
+	public void setIndex(int index) {
+		this.index = index;
+	}
 	public void setType (MsgType t) {
 		type = t;
 	}

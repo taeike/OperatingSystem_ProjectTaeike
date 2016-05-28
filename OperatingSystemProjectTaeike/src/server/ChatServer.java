@@ -5,16 +5,16 @@ import java.util.*;
 
 import javax.swing.JPanel;
 
-import client.ChatMessage;
 import client.AnswerWindow;
-import client.ChatMessage.MsgType;
+import util.ChatMessage;
+import util.ChatMessage.MsgType;
 
 public class ChatServer {
 	// 접속한 클라이언트의 사용자 이름과 출력 스트림을 해쉬 테이블에 보관
 	// 나중에 특정 사용자에게 메시지를 보낼때 사용. 현재 접속해 있는 사용자의 전체 리스트를 구할때도 사용
 	HashMap<String, ObjectOutputStream> clientOutputStreams =
 			new HashMap<String, ObjectOutputStream>();
-	
+		
 	public static void main (String[] args) {
 		new ChatServer().go();
 	}
@@ -91,6 +91,13 @@ public class ChatServer {
 					else if(type == ChatMessage.MsgType.REJECT){
 						rejectGame(message.getSender(),message.getReceiver());
 					}
+					else if(type == ChatMessage.MsgType.POINT){
+						sendPoint(message.getSender(),message.getReceiver() , message.getIndex());
+					}
+					else if(type == ChatMessage.MsgType.NEXT){
+						sendNext(message.getSender(),message.getReceiver());
+					}
+					
 					else {
 						// 정체가 확인되지 않는 이상한 메시지?
 						throw new Exception("S : 클라이언트에서 알수 없는 메시지 도착했음");
@@ -102,8 +109,32 @@ public class ChatServer {
 			}
 		} // close run
 	} // close inner class
-	private void startGame(String sender,String receiver){
-		
+	private void sendNext(String sender,String receiver){
+		ObjectOutputStream write = clientOutputStreams.get(receiver);
+		try {
+			write.writeObject(new ChatMessage(ChatMessage.MsgType.NEXT , sender,receiver, ""));
+		} catch (Exception ex) {
+			System.out.println("S : 서버에서 송신 중 이상 발생");
+			ex.printStackTrace();
+		}
+		write = clientOutputStreams.get(sender);
+		try {
+			write.writeObject(new ChatMessage(ChatMessage.MsgType.NEXT ,receiver ,sender, ""));
+		} catch (Exception ex) {
+			System.out.println("S : 서버에서 송신 중 이상 발생");
+			ex.printStackTrace();
+		}
+	}
+	private void sendPoint(String sender,String receiver,int index){
+		ObjectOutputStream write = clientOutputStreams.get(receiver);
+		try {
+			write.writeObject(new ChatMessage(ChatMessage.MsgType.GETPOINT , sender,receiver, index));
+		} catch (Exception ex) {
+			System.out.println("S : 서버에서 송신 중 이상 발생");
+			ex.printStackTrace();
+		}
+	}
+	private void startGame(String sender,String receiver){	
 		ObjectOutputStream write = clientOutputStreams.get(receiver);
 		try {
 			write.writeObject(new ChatMessage(ChatMessage.MsgType.START , sender, receiver,""));

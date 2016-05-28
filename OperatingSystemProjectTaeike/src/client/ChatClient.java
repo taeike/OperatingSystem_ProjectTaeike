@@ -2,13 +2,53 @@ package client;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Timer;
+
 import javax.swing.*;
 
+import util.ChatMessage;
+import util.Make_GamePanel;
+import util.PosImageIcon;
 
 import java.awt.*;
 import java.awt.event.*;
 
 public class ChatClient {
+	//************************일단계 틀린위치와 틀린그림의 크기**************************
+	private final int[][] Level1_Point = {{744,1004,1110,1065,615,697,905},
+											  {480,430,397,600,634,308,592}};	
+
+	private final int[][] Level1_Point_Size ={{40,40,40,70,70,60,50},
+				                                  {40,40,50,50,50,70,50}};
+	private Make_GamePanel Level1;
+	//************************이단계 틀린위치와 틀린그림의 크기**************************
+	private final int[][] Level2_Point = {{938,1044,995,968,957,1094,1117},
+				                              {205,503,358,499,713,540,690}};	
+
+	private final int[][] Level2_Point_Size ={{40,50,40,40,40,60,50},
+				                                  {50,50,40,40,40,40,50}};
+	private Make_GamePanel Level2;
+
+	//************************삼단계 틀린위치와 틀린그림의 크기**************************
+	private final int[][] Level3_Point = {{785,1100,770,775,1124,998,919},
+				                              {224,247,720,542,137,523,642}};	
+
+	private final int[][] Level3_Point_Size ={{50,40,70,40,30,40,40},
+				                                  {50,150,40,40,40,40,50}};
+	private Make_GamePanel Level3;
+	//************************사단계 틀린위치와 틀린그림의 크기**************************
+	private final int[][] Level4_Point = {{695,914,650,1005,810,1086,995},
+				                              {270,272,682,420,243,222,693}};	
+
+	private final int[][] Level4_Point_Size ={{50,40,50,40,50,50,100},
+				                                  {50,50,40,50,50,80,60}};
+	private Make_GamePanel Level4;
+	
+	
+	
+	ArrayList<PosImageIcon> imgList = new ArrayList<PosImageIcon>();
+	int count = -1;
+	
 	JFrame frame;
 	String frameTitle = "채팅 클라이언트";
 	JTextArea incoming;			// 수신된 메시지를 출력하는 곳
@@ -19,10 +59,11 @@ public class ChatClient {
 	Socket sock;				// 서버 연결용 소켓
 	String user;				// 이 클라이언트로 로그인 한 유저의 이름
 	JButton loginButton;			// 토글이 되는 로그인/로그아웃 버튼
-	JPanel loginPanel;
+	JPanel loginPanel,delayPanel;
+	Timer timer;
 	PosImageIcon LoginPanelImage = new PosImageIcon("LoginImage.jpg", 0, 0,1200 , 850);
 	JTextField nameText = new JTextField();
-
+	int Level = 1;
 	SelectOpponent so;
 	GameStartButton_Panel gameStartPanel;
 
@@ -34,10 +75,21 @@ public class ChatClient {
 
 	private void setUpGUI() {
 		setUpNetworking();
+		
+		imgList.add(new PosImageIcon("1초후게임시작.jpg", 0,0,1200,850));
+		imgList.add(new PosImageIcon("2초후게임시작.jpg", 0,0,1200,850));
+		imgList.add(new PosImageIcon("3초후게임시작.jpg", 0,0,1200,850));	
+		delayPanel = new JPanel(){
+			@Override
+			protected void paintComponent(Graphics g) {
+				if(count == 0) imgList.get(0).draw(g);
+				else if(count == 1) imgList.get(1).draw(g);
+				else if(count == 2)	imgList.get(2).draw(g);
+			}
+		};
 		// build GUI
 		frame = new JFrame(frameTitle + " : 로그인하세요");
 
-	
 
 		frame.setLayout(null);
 		loginPanel = new JPanel(){
@@ -187,6 +239,20 @@ public class ChatClient {
 					else if(type == ChatMessage.MsgType.REJECTED){
 						AnswerWindow selectFrame = new AnswerWindow(1);
 					}
+					else if(type == ChatMessage.MsgType.START){
+						Level1 = new Make_GamePanel("일단계 게임화면.jpg",70,"3단계 배경음악.wav",Level1_Point,Level1_Point_Size
+								,message.getReceiver(),message.getSender(),writer);
+						startGame();
+					}
+					else if(type == ChatMessage.MsgType.GETPOINT){
+						if(Level == 1) Level1.displayPoint(message.getIndex());
+						else if(Level == 2) Level2.displayPoint(message.getIndex()); 
+						else if(Level == 3) Level3.displayPoint(message.getIndex()); 
+						else Level4.displayPoint(message.getIndex()); 
+					}
+					else if(type == ChatMessage.MsgType.NEXT){
+						changePanel(message.getSender(),message.getReceiver(),message.getIndex());
+					}
 					else {
 						// 정체가 확인되지 않는 이상한 메시지
 						throw new Exception("서버에서 알 수 없는 메시지 도착했음");
@@ -197,6 +263,83 @@ public class ChatClient {
 				System.out.println("클라이언트 스레드 종료");		// 프레임이 종료될 경우 이를 통해 스레드 종료
 			}
 		} // close run
+		private void changePanel(String sender,String receiver,int index){
+			
+			if(Level == 1){
+				Level2 = new Make_GamePanel("이단계 게임화면.jpg",70,"2단계 배경음악.wav",Level2_Point,Level2_Point_Size,receiver,sender,writer);
+				Level2.setUp();
+				Level2.progressBarTimer.start();
+				Level2.Level_BGM.startPlay();
+				Level1.Level_BGM.stopPlayer();
+				Level1.progressBarTimer.stop();
+				frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
+				frame.getContentPane().add(Level2); // 다시 등록
+				frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )
+				Level++;
+			}
+			else if(Level == 2){
+				Level3 = new Make_GamePanel("삼단계 게임화면.jpg",70,"1단계 배경음악.wav",Level3_Point,Level3_Point_Size,receiver,sender,writer);	
+				Level3.setUp();
+				Level3.progressBarTimer.start();
+				Level3.Level_BGM.startPlay();
+				Level2.Level_BGM.stopPlayer();
+				Level2.progressBarTimer.stop();
+				frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
+				frame.getContentPane().add(Level3); // 다시 등록
+				frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )
+				Level++;
+			}
+			else if(Level == 3){
+				Level4 = new Make_GamePanel("사단계 게임화면.jpg",70,"4단계 배경음악.wav",Level4_Point,Level4_Point_Size,receiver,sender,writer);
+				Level4.setUp();
+				Level4.progressBarTimer.start();
+				Level4.Level_BGM.startPlay();
+				Level3.Level_BGM.stopPlayer();
+				Level3.progressBarTimer.stop();
+				frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
+				frame.getContentPane().add(Level4); // 다시 등록
+				frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )
+				Level++;
+			}
+			else{
+				frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
+				frame.getContentPane().add(gameStartPanel.panel); // 다시 등록
+				frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )
+			}
+		}
+		private void startGame(){
+			timer = new Timer();
+			timer.schedule(new Task(), 0,1500);
+		}
+		private class Task extends TimerTask{
+			
+			public Task() {
+				delayPanel.setBounds(0, 0, 1200, 850);
+				frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
+				frame.getContentPane().add(delayPanel); // 다시 등록
+				frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )
+			}
+			@Override
+			public void run() {
+				if(count < 3){
+					frame.invalidate();
+					frame.repaint();
+					delayPanel.repaint();
+					count ++;
+				}
+				else if (count == 3){
+					Level1.setUp();
+					Level1.progressBarTimer.start();
+					Level1.Level_BGM.startPlay();
+					Level1.setBounds(0, 0, 1200, 850);
+					frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
+					frame.getContentPane().add(Level1); // 다시 등록
+					frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )
+					count ++;
+					timer = null;;
+				}
+			}
+		}
 
 		// 주어진 String 배열을 정렬한 새로운 배열 리턴
 		private String [] sortUsers(String [] users) {

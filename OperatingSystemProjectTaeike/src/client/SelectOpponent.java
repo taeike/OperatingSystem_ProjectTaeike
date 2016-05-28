@@ -25,6 +25,9 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import util.ChatMessage;
+import util.PosImageIcon;
+
 
 
 public class SelectOpponent {
