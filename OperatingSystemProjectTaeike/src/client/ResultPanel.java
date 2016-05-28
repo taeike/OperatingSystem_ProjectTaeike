@@ -7,8 +7,10 @@ import java.io.ObjectOutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import util.ChatMessage;
 import util.PosImageIcon;
 
 public class ResultPanel extends JPanel{
@@ -19,8 +21,8 @@ public class ResultPanel extends JPanel{
 	private JFrame frame;
 	private String user;
 	private ObjectOutputStream writer;
-	
-	public ResultPanel(String result,JFrame frame,String user,ObjectOutputStream writer){
+	private SelectOpponent so;
+	public ResultPanel(String result,JFrame frame,String user,ObjectOutputStream writer,SelectOpponent so){
 		if(result.equals("win")){
 			resultImage = new PosImageIcon("win.jpg", 0, 0, 1200, 850);
 			System.out.println("이김");
@@ -29,6 +31,7 @@ public class ResultPanel extends JPanel{
 			resultImage = new PosImageIcon("lose.jpg", 0, 0, 1200, 850);
 			System.out.println("짐");
 		}
+		this.so = so;
 		this.frame = frame;
 		this.user = user;
 		this.writer = writer;
@@ -55,11 +58,20 @@ public class ResultPanel extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SelectOpponent so = new SelectOpponent(user, frame, writer);
+				//SelectOpponent so = new SelectOpponent(user, frame, writer);
+				//so.setUpGUI();
 				so.setUpGUI();
 				frame.getContentPane().removeAll(); // 등록된 모든 컨테이너 삭제
 				frame.getContentPane().add(so.mainPanel); // 다시 등록
                 frame.setContentPane(frame.getContentPane()); // 프레임에 설정 (this : Frame )   	
+                
+                try {
+    				writer.writeObject(new ChatMessage(ChatMessage.MsgType.UPDATELIST,user,"",""));
+    				writer.flush();	
+    			} catch(Exception ex) {
+    				JOptionPane.showMessageDialog(null, "로그인 중 서버접속에 문제가 발생하였습니다.");
+    				ex.printStackTrace();
+    			}
 			}
 		});
 		this.add(regameButton);

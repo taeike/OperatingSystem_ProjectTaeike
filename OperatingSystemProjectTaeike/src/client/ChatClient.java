@@ -100,8 +100,6 @@ public class ChatClient {
 		};
 		loginPanel.setLayout(null);
 		
-	
-		
 		nameText.setBounds(100, 100, 200, 50);
 		loginPanel.add(nameText);
 
@@ -110,15 +108,12 @@ public class ChatClient {
 		loginButton.addActionListener(new LogButtonListener());
 		loginPanel.add(loginButton);
 
-
 		frame.setBounds(100, 100, 1200, 850);
 		loginPanel.setBounds(0, 0, 1200, 850);
 		frame.add(loginPanel);	   
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
-		// 네트워킹을 시동하고, 서버에서 메시지를 읽을 스레드 구동
-		
 		Thread readerThread = new Thread(new IncomingReader());
 		readerThread.start();
 
@@ -143,7 +138,6 @@ public class ChatClient {
 		}
 		// 로그인 처리
 		private void processLogin() {
-
 			try {
 				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, nameText.getText(), "", ""));
 				writer.flush();
@@ -154,7 +148,6 @@ public class ChatClient {
 				JOptionPane.showMessageDialog(null, "로그인 중 서버접속에 문제가 발생하였습니다.");
 				ex.printStackTrace();
 			}
-
 		}
 		// 로그아웃 처리
 		private void processLogout() {
@@ -259,6 +252,15 @@ public class ChatClient {
 						Level4.sendNextState();
 						showResult(message);
 					}
+					else if(type == ChatMessage.MsgType.UPDATELIST){
+						String[] users = message.getContents().split("/");
+						for (int i=0; i<users.length; i++) {
+							if (user.equals(users[i])) users[i] = "";
+						}
+						users = sortUsers(users);		// 유저 목록을 쉽게 볼 수 있도록 정렬해서 제공
+						users[0] =  ChatMessage.ALL;	// 리스트 맨 앞에 "전체"가 들어가도록 함
+						so.setCounterParts(users);
+					}
 					else {
 						// 정체가 확인되지 않는 이상한 메시지
 						throw new Exception("서버에서 알 수 없는 메시지 도착했음");
@@ -268,16 +270,17 @@ public class ChatClient {
 				ex.printStackTrace();
 				System.out.println("클라이언트 스레드 종료");		// 프레임이 종료될 경우 이를 통해 스레드 종료
 			}
-		} // close run
+		} // close rungasgege
 		private void showResult(ChatMessage message){
 			ResultPanel result;
 			System.out.println( message.getScore()+" ? "+ Level4.getScore());
+			so = new SelectOpponent(user, frame, writer);
 			if(message.getScore() < Level4.getScore()){
 				System.out.println("이김");
-				result = new ResultPanel("win", frame, message.getReceiver(), writer);
+				result = new ResultPanel("win", frame, message.getReceiver(), writer,so);
 			}
 			else{
-				result = new ResultPanel("lose", frame, message.getReceiver(), writer);
+				result = new ResultPanel("lose", frame, message.getReceiver(), writer,so);
 			}
 			result.setBounds(0, 0, 1200, 850);
 			result.setLayout(null);

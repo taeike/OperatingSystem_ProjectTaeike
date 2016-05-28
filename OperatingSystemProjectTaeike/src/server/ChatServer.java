@@ -102,7 +102,9 @@ public class ChatServer {
 					else if(type == ChatMessage.MsgType.ACCEPTOPSCORE){
 						finalNext(message);
 					}
-					
+					else if(type == ChatMessage.MsgType.UPDATELIST){
+						broadcastMessage(new ChatMessage(ChatMessage.MsgType.UPDATELIST, "", "", makeClientList()));
+					}
 					else {
 						// 정체가 확인되지 않는 이상한 메시지?
 						throw new Exception("S : 클라이언트에서 알수 없는 메시지 도착했음");
@@ -114,6 +116,7 @@ public class ChatServer {
 			}
 		} // close run
 	} // close inner class
+
 	private void finalNext(ChatMessage message){
 		ObjectOutputStream write = clientOutputStreams.get(message.getReceiver());
 		try {
