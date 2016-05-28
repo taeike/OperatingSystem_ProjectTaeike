@@ -14,7 +14,7 @@ public class ChatServer {
 	// 나중에 특정 사용자에게 메시지를 보낼때 사용. 현재 접속해 있는 사용자의 전체 리스트를 구할때도 사용
 	HashMap<String, ObjectOutputStream> clientOutputStreams =
 			new HashMap<String, ObjectOutputStream>();
-
+	
 	public static void main (String[] args) {
 		new ChatServer().go();
 	}
@@ -86,7 +86,7 @@ public class ChatServer {
 						sendRequestGame(message.getSender(), message.getReceiver());
 					}
 					else if(type == ChatMessage.MsgType.ACCEPT){
-						startGame(message.getSender());
+						startGame(message.getSender(),message.getReceiver());
 					}
 					else if(type == ChatMessage.MsgType.REJECT){
 						rejectGame(message.getSender(),message.getReceiver());
@@ -102,7 +102,22 @@ public class ChatServer {
 			}
 		} // close run
 	} // close inner class
-	private void startGame(String sender){
+	private void startGame(String sender,String receiver){
+		
+		ObjectOutputStream write = clientOutputStreams.get(receiver);
+		try {
+			write.writeObject(new ChatMessage(ChatMessage.MsgType.START , sender, receiver,""));
+		} catch (Exception ex) {
+			System.out.println("S : 서버에서 송신 중 이상 발생");
+			ex.printStackTrace();
+		}
+		write = clientOutputStreams.get(sender);
+		try {
+			write.writeObject(new ChatMessage(ChatMessage.MsgType.START, receiver, sender,""));
+		} catch (Exception ex) {
+			System.out.println("S : 서버에서 송신 중 이상 발생");
+			ex.printStackTrace();
+		}
 		
 	}
 	private void rejectGame(String sender, String receiver){
