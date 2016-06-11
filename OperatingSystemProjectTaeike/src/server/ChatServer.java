@@ -5,7 +5,7 @@ import java.util.*;
 
 import javax.swing.JPanel;
 
-import client.AnswerWindow;
+import util.AnswerWindow;
 import util.ChatMessage;
 import util.ChatMessage.MsgType;
 
@@ -226,7 +226,7 @@ public class ChatServer {
 		// 특정 상대에게 보내는 경우라면
 		ObjectOutputStream write = clientOutputStreams.get(receiver);
 		try {
-			write.writeObject(new ChatMessage(ChatMessage.MsgType.SERVER_MSG, sender, "", contents));
+			write.writeObject(new ChatMessage(ChatMessage.MsgType.SERVER_MSG, sender, receiver, contents));
 		} catch (Exception ex) {
 			System.out.println("S : 서버에서 송신 중 이상 발생");
 			ex.printStackTrace();

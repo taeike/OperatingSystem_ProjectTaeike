@@ -7,6 +7,7 @@ import java.util.Timer;
 import javax.naming.spi.DirStateFactory.Result;
 import javax.swing.*;
 
+import util.AnswerWindow;
 import util.ChatMessage;
 import util.Make_GamePanel;
 import util.PosImageIcon;
@@ -62,7 +63,7 @@ public class ChatClient {
 	JButton loginButton;			// 토글이 되는 로그인/로그아웃 버튼
 	JPanel loginPanel,delayPanel;
 	Timer timer;
-	PosImageIcon LoginPanelImage = new PosImageIcon("LoginImage.jpg", 0, 0,1200 , 850);
+	PosImageIcon LoginPanelImage = new PosImageIcon("로그인화면.jpg", 0, 0,1200 , 850);
 	JTextField nameText = new JTextField();
 	int Level = 1;
 	SelectOpponent so;
@@ -71,7 +72,7 @@ public class ChatClient {
 	public static void main(String[] args) {
 		ChatClient client = new ChatClient();
 		client.setUpGUI();
-
+		
 	}
 
 	private void setUpGUI() {
@@ -83,9 +84,9 @@ public class ChatClient {
 		delayPanel = new JPanel(){
 			@Override
 			protected void paintComponent(Graphics g) {
-				if(count == 0) imgList.get(0).draw(g);
+				if(count == 0) imgList.get(2).draw(g);
 				else if(count == 1) imgList.get(1).draw(g);
-				else if(count == 2)	imgList.get(2).draw(g);
+				else if(count == 2)	imgList.get(0).draw(g);
 			}
 		};
 		// build GUI
@@ -100,14 +101,18 @@ public class ChatClient {
 		};
 		loginPanel.setLayout(null);
 		
-		nameText.setBounds(100, 100, 200, 50);
+		nameText.setBounds(550, 740, 200, 50);
 		loginPanel.add(nameText);
 
-		loginButton = new JButton("Login");
-		loginButton.setBounds(100,200,100,30);
+		loginButton = new JButton();
+		loginButton.setOpaque(false);
+		loginButton.setBorderPainted(false);
+		loginButton.setContentAreaFilled(false);
+		loginButton.setBounds(1000,700,200,100);
 		loginButton.addActionListener(new LogButtonListener());
 		loginPanel.add(loginButton);
-
+	
+		frame.setUndecorated(true);
 		frame.setBounds(100, 100, 1200, 850);
 		loginPanel.setBounds(0, 0, 1200, 850);
 		frame.add(loginPanel);	   
@@ -202,10 +207,11 @@ public class ChatClient {
 						frame.setTitle(frameTitle + " : 로그인 하세요");
 						loginButton.setText("Login");
 					} else if (type == ChatMessage.MsgType.SERVER_MSG) { // 메시지를 받았다면 보여줌
-						if (message.getSender().equals(user)) continue;  // 내가 보낸 편지면 보일 필요 없음
-						incoming.append(message.getSender() + " : " + message.getContents() + "\n");
+						System.out.println(message.getContents());
+				    	if (message.getSender().equals(user)) continue;  // 내가 보낸 편지면 보일 필요 없음
+						AnswerWindow anw = new AnswerWindow(message,writer);
 					} 
-					if (type == ChatMessage.MsgType.LOGIN_LIST) {
+					else if (type == ChatMessage.MsgType.LOGIN_LIST) {
 						// 유저 리스트를 추출 해서 counterParts 리스트에 넣어 줌.
 						// 나는  빼고 (""로 만들어 정렬 후 리스트 맨 앞에 오게 함)
 						String[] users = message.getContents().split("/");
@@ -262,7 +268,7 @@ public class ChatClient {
 						so.setCounterParts(users);
 					}
 					else {
-						// 정체가 확인되지 않는 이상한 메시지
+						System.out.println(type);
 						throw new Exception("서버에서 알 수 없는 메시지 도착했음");
 					}
 				} // close while

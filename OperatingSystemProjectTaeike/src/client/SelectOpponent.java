@@ -22,9 +22,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.AncestorEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import util.AnswerWindow;
 import util.ChatMessage;
 import util.PosImageIcon;
 
@@ -41,7 +43,7 @@ public class SelectOpponent {
     Socket sock;				// 서버 연결용 소켓
     String user;				// 이 클라이언트로 로그인 한 유저의 이름
     JButton logButton;			// 토글이 되는 로그인/로그아웃 버튼
-    PosImageIcon selectOpImage = new PosImageIcon("selectOp.jpg", 0, 0, 1200, 850);
+    PosImageIcon selectOpImage = new PosImageIcon("대기실.jpg", 0, 0, 1200, 850);
     JPanel mainPanel;
     String opponentName;
     
@@ -64,6 +66,7 @@ public class SelectOpponent {
     counterParts.setVisibleRowCount(5);
     counterParts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     counterParts.setFixedCellWidth(100);
+    counterParts.setOpaque(false);
     counterParts.addListSelectionListener(new ListSelectionListener() {
 		
 		@Override
@@ -73,10 +76,12 @@ public class SelectOpponent {
 		}
 	});
     // 메시지 전송을 위한 버튼
-    JButton sendButton = new JButton("Send");
-    sendButton.setBounds(1050, 350, 100, 50);
+    JButton sendButton = new JButton();
+    sendButton.setBounds(800, 650, 300, 100);
+    sendButton.setOpaque(false);
+    sendButton.setContentAreaFilled(false);
+    sendButton.setBorderPainted(false);
     sendButton.addActionListener(new ActionListener() {
-		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			//나랑 붙자
@@ -86,6 +91,18 @@ public class SelectOpponent {
 			} catch(Exception ex) {
 				ex.printStackTrace();
 			}	
+		}
+	});
+    
+    JButton messageSendButton = new JButton();
+    messageSendButton.setBounds(100, 650, 300, 100);
+    messageSendButton.setOpaque(false);
+    messageSendButton.setContentAreaFilled(false);
+    messageSendButton.setBorderPainted(false);
+    messageSendButton.addActionListener(new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			AnswerWindow an = new AnswerWindow(user,writer,opponentName);
 		}
 	});
     
@@ -105,7 +122,7 @@ public class SelectOpponent {
     lowerPanel.setLayout(null);
   
     mainPanel.add(sendButton);
-    
+    mainPanel.add(messageSendButton);
  
     mainPanel.add( cScroller);
     mainPanel.setBounds(0, 0, 1200, 850);
