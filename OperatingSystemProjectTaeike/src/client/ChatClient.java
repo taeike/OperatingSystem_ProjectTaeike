@@ -112,7 +112,7 @@ public class ChatClient {
 		loginButton.addActionListener(new LogButtonListener());
 		loginPanel.add(loginButton);
 	
-		frame.setUndecorated(true);
+		//frame.setUndecorated(true);
 		frame.setBounds(100, 100, 1200, 850);
 		loginPanel.setBounds(0, 0, 1200, 850);
 		frame.add(loginPanel);	   
@@ -240,6 +240,8 @@ public class ChatClient {
 						AnswerWindow selectFrame = new AnswerWindow(1);
 					}
 					else if(type == ChatMessage.MsgType.START){
+						Level = 1;
+						count = -1;
 						Level1 = new Make_GamePanel("일단계 게임화면.jpg",70,"3단계 배경음악.wav",Level1_Point,Level1_Point_Size
 								,message.getReceiver(),message.getSender(),writer,0,1);
 						startGame();

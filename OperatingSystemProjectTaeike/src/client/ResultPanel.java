@@ -24,11 +24,11 @@ public class ResultPanel extends JPanel{
 	private SelectOpponent so;
 	public ResultPanel(String result,JFrame frame,String user,ObjectOutputStream writer,SelectOpponent so){
 		if(result.equals("win")){
-			resultImage = new PosImageIcon("win.jpg", 0, 0, 1200, 850);
+			resultImage = new PosImageIcon("½Â¸®.jpg", 0, 0, 1200, 850);
 			System.out.println("ÀÌ±è");
 		}
 		else{
-			resultImage = new PosImageIcon("lose.jpg", 0, 0, 1200, 850);
+			resultImage = new PosImageIcon("ÆÐ¹è.jpg", 0, 0, 1200, 850);
 			System.out.println("Áü");
 		}
 		this.so = so;

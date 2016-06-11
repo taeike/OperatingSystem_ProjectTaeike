@@ -14,17 +14,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class AnswerWindow extends JFrame{
-	
+
 	private JPanel panel;
 	private JButton okButton;
 	private JButton cancelButton;
 	private String op;
 	private ObjectOutputStream writer;
 	private String user;
-	PosImageIcon image = new PosImageIcon("S.jpg", 0, 0, 300, 200);
+	PosImageIcon image ;
 	PosImageIcon rejectImage = new PosImageIcon("", 0, 0, 300, 200);
 	JFrame frame;
 	public AnswerWindow(String op,String user,ObjectOutputStream writer){
+		image = new PosImageIcon("싸움요청.jpg", 0, 0, 300, 200);
 		this.user = user;
 		this.writer = writer;
 		this.op = op;
@@ -32,10 +33,11 @@ public class AnswerWindow extends JFrame{
 		requestSetUpGUI();
 	}
 	public AnswerWindow(String user,ObjectOutputStream writer,String op){
-			textSetUp();
-			this.op = op;
-			this.writer = writer;
-			this.user = user;
+		image = new PosImageIcon("보내기.jpg", 0, 0, 300, 200);
+		textSetUp();
+		this.op = op;
+		this.writer = writer;
+		this.user = user;
 	}
 	public AnswerWindow(int n){
 		this.user = user;
@@ -44,6 +46,7 @@ public class AnswerWindow extends JFrame{
 		rejectSetUPGUI();
 	}
 	public AnswerWindow(ChatMessage data,ObjectOutputStream writer){
+		image = new PosImageIcon("메시지받음.jpg", 0, 0, 300, 200);
 		this.op = data.getSender();
 		System.out.println(data.getContents());
 		InMessageSetUpGUI(data.getContents(),data.getSender(),data.getReceiver(),writer);
@@ -61,13 +64,17 @@ public class AnswerWindow extends JFrame{
 		};
 		panel.setBounds(0, 0, 300, 200);
 		panel.setLayout(null);
-		
+
 		JTextField text = new JTextField();
 		text.setBounds(20,20,260, 120);
 		panel.add(text);
-		
-		okButton = new JButton("확인");
-		okButton.setBounds(145, 170, 50, 30);
+
+		okButton = new JButton();
+		okButton.setBounds(150, 150, 100, 50);
+		okButton.setOpaque(false);
+		okButton.setContentAreaFilled(false);
+		okButton.setBorderPainted(false);
+		okButton.setBounds(80, 160, 70, 40);
 		okButton.addActionListener(new ActionListener() {	
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -86,9 +93,9 @@ public class AnswerWindow extends JFrame{
 				}
 			}
 		});
-		
+
 		panel.add(okButton);
-		
+
 		this.setUndecorated(true);
 		this.add(panel);
 		this.setVisible(true);
@@ -106,16 +113,19 @@ public class AnswerWindow extends JFrame{
 		};
 		panel.setBounds(0, 0, 300, 200);
 		panel.setLayout(null);
-		
+
 		JLabel label = new JLabel(n);
 		label.setOpaque(false);
 		label.setBounds(100, 100, 100, 100);
 		panel.add(label);
-		
-		okButton = new JButton("답장");
-		okButton.setBounds(100, 170, 50, 30);
+
+		okButton = new JButton();
+		okButton.setBounds(200, 0, 100, 50);
+		okButton.setOpaque(false);
+		okButton.setContentAreaFilled(false);
+		okButton.setBorderPainted(false);
 		okButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.setVisible(false);
@@ -141,21 +151,7 @@ public class AnswerWindow extends JFrame{
 		};
 		panel.setBounds(0, 0, 300, 200);
 		panel.setLayout(null);
-		
 
-		okButton = new JButton("확인");
-		okButton.setBounds(100, 170, 50, 30);
-		okButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);
-				frame = null;
-			}
-		});
-		
-		panel.add(okButton);
-		
 		this.setUndecorated(true);
 		this.add(panel);
 		this.setVisible(true);
@@ -173,12 +169,15 @@ public class AnswerWindow extends JFrame{
 		};
 		panel.setBounds(0, 0, 300, 200);
 		panel.setLayout(null);
-		
-		
-		okButton = new JButton("수락");
-		okButton.setBounds(100, 170, 50, 30);
+
+
+		okButton = new JButton();
+		okButton.setOpaque(false);
+		okButton.setContentAreaFilled(false);
+		okButton.setBorderPainted(false);
+		okButton.setBounds(80, 160, 70, 40);
 		okButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -190,13 +189,16 @@ public class AnswerWindow extends JFrame{
 					JOptionPane.showMessageDialog(null, "로그인 중 서버접속에 문제가 발생하였습니다.");
 					ex.printStackTrace();
 				}
-				
+
 			}
 		});
-		cancelButton = new JButton("거절");
-		cancelButton.setBounds(150,170,50,30);
+		cancelButton = new JButton();
+		cancelButton.setBounds(180,160,70,40);
+		cancelButton.setOpaque(false);
+		cancelButton.setContentAreaFilled(false);
+		cancelButton.setBorderPainted(false);
 		cancelButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -211,7 +213,7 @@ public class AnswerWindow extends JFrame{
 		});
 		panel.add(okButton);
 		panel.add(cancelButton);
-		
+
 		this.setUndecorated(true);
 		this.add(panel);
 		this.setVisible(true);
