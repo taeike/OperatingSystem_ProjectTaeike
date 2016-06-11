@@ -42,7 +42,10 @@ public class ResultPanel extends JPanel{
 		this.setLayout(null);
 		System.out.println("setup");
 		exitButton = new JButton("종료");
-		exitButton.setBounds(500, 500, 100, 50);
+		exitButton.setBounds(150, 350, 200, 100);
+		exitButton.setOpaque(false);
+		exitButton.setContentAreaFilled(false);
+		exitButton.setBorderPainted(false);
 		exitButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -53,7 +56,10 @@ public class ResultPanel extends JPanel{
 		this.add(exitButton);
 		
 		regameButton = new JButton("재시작");
-		regameButton.setBounds(500, 600, 100, 50);
+		regameButton.setBounds(850, 350, 300, 100);
+		regameButton.setOpaque(false);
+		regameButton.setContentAreaFilled(false);
+		regameButton.setBorderPainted(false);
 		regameButton.addActionListener(new ActionListener() {
 			
 			@Override

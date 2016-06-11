@@ -59,6 +59,7 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 	private ObjectOutputStream writer;
 	private int level;
 	private int flag=0;
+	private boolean[] owner = new boolean[7];
 	//private ArrayList<Boolean> state_Point = new ArrayList<Boolean>();
 
 	public Make_GamePanel(String imgURL,int maxTime,String URL,int[][] Level_Point,int[][] Level_Point_Size,
@@ -79,6 +80,7 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		this.opponentName = reciver;
 		this.writer = writer;
 		this.level = level;
+		
 		//timeLabel.setFont(new Font("1ÈÆÈ­¾ç¿¬È­ R",Font.CENTER_BASELINE,15));
 		//	scoreLabel.setFont(new Font("1ÈÆÈ­¾ç¿¬È­ R",Font.CENTER_BASELINE,15));
 	}	
@@ -246,30 +248,44 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		}
 		g2d.setColor(Color.blue);
 		if (isTrue[0] == true) {								
+			if(owner[0] == false) g2d.setColor(Color.blue);
+			else g2d.setColor(Color.red);
 			g2d.drawOval(Level_Point[0][0],Level_Point[1][0],Level_Point_Size[0][0],Level_Point_Size[1][0]);
 			g2d.drawOval(Level_Point[0][0]-600,Level_Point[1][0],Level_Point_Size[0][0],Level_Point_Size[1][0]);				
 		}
 		if (isTrue[1] == true) {
+			if(owner[1] == false) g2d.setColor(Color.blue);
+			else g2d.setColor(Color.red);
 			g2d.drawOval(Level_Point[0][1],Level_Point[1][1],Level_Point_Size[0][1],Level_Point_Size[1][1]);
 			g2d.drawOval(Level_Point[0][1]-600,Level_Point[1][1],Level_Point_Size[0][1],Level_Point_Size[1][1]);
 		}
-		if (isTrue[2] == true) {	
+		if (isTrue[2] == true) {
+			if(owner[2] == false) g2d.setColor(Color.blue);
+			else g2d.setColor(Color.red);
 			g2d.drawOval(Level_Point[0][2],Level_Point[1][2],Level_Point_Size[0][2],Level_Point_Size[1][2]);
 			g2d.drawOval(Level_Point[0][2]-600,Level_Point[1][2],Level_Point_Size[0][2],Level_Point_Size[1][2]);
 		}
-		if (isTrue[3] == true) {		
+		if (isTrue[3] == true) {	
+			if(owner[3] == false) g2d.setColor(Color.blue);
+			else g2d.setColor(Color.red);
 			g2d.drawOval(Level_Point[0][3],Level_Point[1][3],Level_Point_Size[0][3],Level_Point_Size[1][3]);
 			g2d.drawOval(Level_Point[0][3]-600,Level_Point[1][3],Level_Point_Size[0][3],Level_Point_Size[1][3]);
 		}
-		if (isTrue[4] == true) {				
+		if (isTrue[4] == true) {
+			if(owner[4] == false) g2d.setColor(Color.blue);
+			else g2d.setColor(Color.red);
 			g2d.drawOval(Level_Point[0][4],Level_Point[1][4],Level_Point_Size[0][4],Level_Point_Size[1][4]);
 			g2d.drawOval(Level_Point[0][4]-600,Level_Point[1][4],Level_Point_Size[0][4],Level_Point_Size[1][4]);
 		} 
-		if (isTrue[5] == true) {				
+		if (isTrue[5] == true) {
+			if(owner[5] == false) g2d.setColor(Color.blue);
+			else g2d.setColor(Color.red);
 			g2d.drawOval(Level_Point[0][5],Level_Point[1][5],Level_Point_Size[0][5],Level_Point_Size[1][5]);
 			g2d.drawOval(Level_Point[0][5]-600,Level_Point[1][5],Level_Point_Size[0][5],Level_Point_Size[1][5]);
 		} 
-		if (isTrue[6] == true) {				
+		if (isTrue[6] == true) {
+			if(owner[6] == false) g2d.setColor(Color.blue);
+			else g2d.setColor(Color.red);
 			g2d.drawOval(Level_Point[0][6],Level_Point[1][6],Level_Point_Size[0][6],Level_Point_Size[1][6]);
 			g2d.drawOval(Level_Point[0][6]-600,Level_Point[1][6],Level_Point_Size[0][6],Level_Point_Size[1][6]);
 		} 
@@ -336,6 +352,9 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		if(flag==0){
 			flag++;
 			if(level != 4){
+				Level_BGM.stopPlayer();
+				 progressBarTimer.stop();
+			
 				try {
 					writer.writeObject(new ChatMessage(ChatMessage.MsgType.NEXT, user,opponentName,totalScore,level));
 					writer.flush();
@@ -363,6 +382,7 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 	}
 	public void displayPoint(int index){
 		isTrue[index] = true;
+		owner[index] = true;
 		deduplication[index]++;
 		this.repaint();
 	}
