@@ -37,6 +37,7 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 	public ProgressiveBar progressBar;
 	private JLabel timeLabel;
 	public Timer progressBarTimer;
+	private Timer hindTimer;
 	private LineListener mouseListener = new LineListener();
 	private JButton[] btn = new  JButton[7];
 	private JButton[] pair_btn = new  JButton[7];
@@ -60,6 +61,9 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 	private int level;
 	private int flag=0;
 	private boolean[] owner = new boolean[7];
+	private JButton hinButton = new JButton(new ImageIcon("먹.jpg"));
+	private int hind = 0,opHind = 0;
+	private PosImageIcon muck = new PosImageIcon("먹물.jpg", 613, 131, 561, 640);
 	//private ArrayList<Boolean> state_Point = new ArrayList<Boolean>();
 
 	public Make_GamePanel(String imgURL,int maxTime,String URL,int[][] Level_Point,int[][] Level_Point_Size,
@@ -80,7 +84,6 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		this.opponentName = reciver;
 		this.writer = writer;
 		this.level = level;
-		
 		//timeLabel.setFont(new Font("1훈화양연화 R",Font.CENTER_BASELINE,15));
 		//	scoreLabel.setFont(new Font("1훈화양연화 R",Font.CENTER_BASELINE,15));
 	}	
@@ -117,11 +120,25 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		stopTime.addActionListener(this);
 		this.add(stopTime);
 
-		progressBarTimer = new Timer(1000,new TimeBar());
+		hinButton.setBounds(910,778,30,30);
+		hinButton.addActionListener(new HindButtonHandler());
+		this.add(hinButton);
 
+		progressBarTimer = new Timer(1000,new TimeBar());
+		hindTimer = new Timer(1000, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(opHind != 0){
+					opHind--;
+					repaint();
+				}
+				else{
+					hindTimer.stop();
+				}
+			}
+		});
 		this.addMouseListener(mouseListener);
 	}
-
 	public boolean find_Point(int index, Point click) {
 		int pointX = click.x;
 		int pointY = click.y;
@@ -157,11 +174,9 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 			point = e.getPoint();	//좌표받아오기
 			int x = (int) point.getX();
 			int y = (int) point.getY();
-
-			//System.out.println("" + point.getX() + " " + point.getY());
+			
+			System.out.println("" + point.getX() + " " + point.getY());
 			if((x>613&&x<1174)&&(y>131&&y<750)){
-
-
 
 				if (find_Point(0, point)&&deduplication[0]==0) {											// 미리 틀린곳의 좌표를 배열에 넣고 내가 누른 좌표값을 비교한다.
 					sendClearPoint(0);
@@ -239,77 +254,79 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		// 정답확인시 체크
 		x = (int) point.getX();
 		y = (int) point.getY();
+		if(opHind == 0){
+			g2d.setStroke(new BasicStroke(8));						
+			g2d.setColor(Color.GREEN);
+			if(magicEye_Boolean){
+				g2d.drawOval(Level_Point[0][magicEye_Count],Level_Point[1][magicEye_Count],Level_Point_Size[0][magicEye_Count],Level_Point_Size[1][magicEye_Count]);
+				g2d.drawOval(Level_Point[0][magicEye_Count]-600,Level_Point[1][magicEye_Count],Level_Point_Size[0][magicEye_Count],Level_Point_Size[1][magicEye_Count]);	
+			}
+			g2d.setColor(Color.blue);
+			if (isTrue[0] == true) {								
+				if(owner[0] == false) g2d.setColor(Color.blue);
+				else g2d.setColor(Color.red);
+				g2d.drawOval(Level_Point[0][0],Level_Point[1][0],Level_Point_Size[0][0],Level_Point_Size[1][0]);
+				g2d.drawOval(Level_Point[0][0]-600,Level_Point[1][0],Level_Point_Size[0][0],Level_Point_Size[1][0]);				
+			}
+			if (isTrue[1] == true) {
+				if(owner[1] == false) g2d.setColor(Color.blue);
+				else g2d.setColor(Color.red);
+				g2d.drawOval(Level_Point[0][1],Level_Point[1][1],Level_Point_Size[0][1],Level_Point_Size[1][1]);
+				g2d.drawOval(Level_Point[0][1]-600,Level_Point[1][1],Level_Point_Size[0][1],Level_Point_Size[1][1]);
+			}
+			if (isTrue[2] == true) {
+				if(owner[2] == false) g2d.setColor(Color.blue);
+				else g2d.setColor(Color.red);
+				g2d.drawOval(Level_Point[0][2],Level_Point[1][2],Level_Point_Size[0][2],Level_Point_Size[1][2]);
+				g2d.drawOval(Level_Point[0][2]-600,Level_Point[1][2],Level_Point_Size[0][2],Level_Point_Size[1][2]);
+			}
+			if (isTrue[3] == true) {	
+				if(owner[3] == false) g2d.setColor(Color.blue);
+				else g2d.setColor(Color.red);
+				g2d.drawOval(Level_Point[0][3],Level_Point[1][3],Level_Point_Size[0][3],Level_Point_Size[1][3]);
+				g2d.drawOval(Level_Point[0][3]-600,Level_Point[1][3],Level_Point_Size[0][3],Level_Point_Size[1][3]);
+			}
+			if (isTrue[4] == true) {
+				if(owner[4] == false) g2d.setColor(Color.blue);
+				else g2d.setColor(Color.red);
+				g2d.drawOval(Level_Point[0][4],Level_Point[1][4],Level_Point_Size[0][4],Level_Point_Size[1][4]);
+				g2d.drawOval(Level_Point[0][4]-600,Level_Point[1][4],Level_Point_Size[0][4],Level_Point_Size[1][4]);
+			} 
+			if (isTrue[5] == true) {
+				if(owner[5] == false) g2d.setColor(Color.blue);
+				else g2d.setColor(Color.red);
+				g2d.drawOval(Level_Point[0][5],Level_Point[1][5],Level_Point_Size[0][5],Level_Point_Size[1][5]);
+				g2d.drawOval(Level_Point[0][5]-600,Level_Point[1][5],Level_Point_Size[0][5],Level_Point_Size[1][5]);
+			} 
+			if (isTrue[6] == true) {
+				if(owner[6] == false) g2d.setColor(Color.blue);
+				else g2d.setColor(Color.red);
+				g2d.drawOval(Level_Point[0][6],Level_Point[1][6],Level_Point_Size[0][6],Level_Point_Size[1][6]);
+				g2d.drawOval(Level_Point[0][6]-600,Level_Point[1][6],Level_Point_Size[0][6],Level_Point_Size[1][6]);
+			} 
+			if(correct==0){		// 틀린 좌표값을 입력했을때 X 표시					
+				g2d.setColor(Color.RED);
+				g2d.drawLine(x - 7, y - 8, x + 7, y + 8);
+				g2d.drawLine(x - 8, y - 8, x + 8, y + 8);
+				g2d.drawLine(x - 8, y + 8, x + 8, y - 7);
 
-		g2d.setStroke(new BasicStroke(8));						
-		g2d.setColor(Color.GREEN);
-		if(magicEye_Boolean){
-			g2d.drawOval(Level_Point[0][magicEye_Count],Level_Point[1][magicEye_Count],Level_Point_Size[0][magicEye_Count],Level_Point_Size[1][magicEye_Count]);
-			g2d.drawOval(Level_Point[0][magicEye_Count]-600,Level_Point[1][magicEye_Count],Level_Point_Size[0][magicEye_Count],Level_Point_Size[1][magicEye_Count]);	
-		}
-		g2d.setColor(Color.blue);
-		if (isTrue[0] == true) {								
-			if(owner[0] == false) g2d.setColor(Color.blue);
-			else g2d.setColor(Color.red);
-			g2d.drawOval(Level_Point[0][0],Level_Point[1][0],Level_Point_Size[0][0],Level_Point_Size[1][0]);
-			g2d.drawOval(Level_Point[0][0]-600,Level_Point[1][0],Level_Point_Size[0][0],Level_Point_Size[1][0]);				
-		}
-		if (isTrue[1] == true) {
-			if(owner[1] == false) g2d.setColor(Color.blue);
-			else g2d.setColor(Color.red);
-			g2d.drawOval(Level_Point[0][1],Level_Point[1][1],Level_Point_Size[0][1],Level_Point_Size[1][1]);
-			g2d.drawOval(Level_Point[0][1]-600,Level_Point[1][1],Level_Point_Size[0][1],Level_Point_Size[1][1]);
-		}
-		if (isTrue[2] == true) {
-			if(owner[2] == false) g2d.setColor(Color.blue);
-			else g2d.setColor(Color.red);
-			g2d.drawOval(Level_Point[0][2],Level_Point[1][2],Level_Point_Size[0][2],Level_Point_Size[1][2]);
-			g2d.drawOval(Level_Point[0][2]-600,Level_Point[1][2],Level_Point_Size[0][2],Level_Point_Size[1][2]);
-		}
-		if (isTrue[3] == true) {	
-			if(owner[3] == false) g2d.setColor(Color.blue);
-			else g2d.setColor(Color.red);
-			g2d.drawOval(Level_Point[0][3],Level_Point[1][3],Level_Point_Size[0][3],Level_Point_Size[1][3]);
-			g2d.drawOval(Level_Point[0][3]-600,Level_Point[1][3],Level_Point_Size[0][3],Level_Point_Size[1][3]);
-		}
-		if (isTrue[4] == true) {
-			if(owner[4] == false) g2d.setColor(Color.blue);
-			else g2d.setColor(Color.red);
-			g2d.drawOval(Level_Point[0][4],Level_Point[1][4],Level_Point_Size[0][4],Level_Point_Size[1][4]);
-			g2d.drawOval(Level_Point[0][4]-600,Level_Point[1][4],Level_Point_Size[0][4],Level_Point_Size[1][4]);
-		} 
-		if (isTrue[5] == true) {
-			if(owner[5] == false) g2d.setColor(Color.blue);
-			else g2d.setColor(Color.red);
-			g2d.drawOval(Level_Point[0][5],Level_Point[1][5],Level_Point_Size[0][5],Level_Point_Size[1][5]);
-			g2d.drawOval(Level_Point[0][5]-600,Level_Point[1][5],Level_Point_Size[0][5],Level_Point_Size[1][5]);
-		} 
-		if (isTrue[6] == true) {
-			if(owner[6] == false) g2d.setColor(Color.blue);
-			else g2d.setColor(Color.red);
-			g2d.drawOval(Level_Point[0][6],Level_Point[1][6],Level_Point_Size[0][6],Level_Point_Size[1][6]);
-			g2d.drawOval(Level_Point[0][6]-600,Level_Point[1][6],Level_Point_Size[0][6],Level_Point_Size[1][6]);
-		} 
-		if(correct==0){		// 틀린 좌표값을 입력했을때 X 표시					
-			g2d.setColor(Color.RED);
-			g2d.drawLine(x - 7, y - 8, x + 7, y + 8);
-			g2d.drawLine(x - 8, y - 8, x + 8, y + 8);
-			g2d.drawLine(x - 8, y + 8, x + 8, y - 7);
+				g2d.drawLine(x - 8, y + 7, x + 7, y - 8);
+				g2d.drawLine(x - 8, y + 8, x + 8, y - 8);
+				g2d.drawLine(x - 7, y + 8, x + 8, y - 7);
+			}
 
-			g2d.drawLine(x - 8, y + 7, x + 7, y - 8);
-			g2d.drawLine(x - 8, y + 8, x + 8, y - 8);
-			g2d.drawLine(x - 7, y + 8, x + 8, y - 7);
+			scoreLabel.setText(totalScore+"점");
+			count = (isTrue[0] ? 1 : 0) + (isTrue[1] ? 1 : 0) + (isTrue[2] ? 1 : 0) + (isTrue[3] ? 1 : 0) + (isTrue[4] ? 1 : 0) + (isTrue[5] ? 1 : 0) + (isTrue[6] ? 1 : 0);			
+			if(count == 1){countLabel.setIcon(new ImageIcon("6개남음.jpg"));}
+			else if(count == 2){countLabel.setIcon(new ImageIcon("5개남음.jpg"));}
+			else if(count == 3){countLabel.setIcon(new ImageIcon("4개남음.jpg"));}
+			else if(count == 4){countLabel.setIcon(new ImageIcon("3개남음.jpg"));}
+			else if(count == 5){countLabel.setIcon(new ImageIcon("2개남음.jpg"));}
+			else if(count == 6){countLabel.setIcon(new ImageIcon("1개남음.jpg"));}
 		}
-
-		scoreLabel.setText(totalScore+"점");
-		count = (isTrue[0] ? 1 : 0) + (isTrue[1] ? 1 : 0) + (isTrue[2] ? 1 : 0) + (isTrue[3] ? 1 : 0) + (isTrue[4] ? 1 : 0) + (isTrue[5] ? 1 : 0) + (isTrue[6] ? 1 : 0);			
-		if(count == 1){countLabel.setIcon(new ImageIcon("6개남음.jpg"));}
-		else if(count == 2){countLabel.setIcon(new ImageIcon("5개남음.jpg"));}
-		else if(count == 3){countLabel.setIcon(new ImageIcon("4개남음.jpg"));}
-		else if(count == 4){countLabel.setIcon(new ImageIcon("3개남음.jpg"));}
-		else if(count == 5){countLabel.setIcon(new ImageIcon("2개남음.jpg"));}
-		else if(count == 6){countLabel.setIcon(new ImageIcon("1개남음.jpg"));}
-
-
+		else{
+			muck.draw(g2d);
+		}
 	}
 	class TimeBar implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
@@ -353,8 +370,8 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 			flag++;
 			if(level != 4){
 				Level_BGM.stopPlayer();
-				 progressBarTimer.stop();
-			
+				progressBarTimer.stop();
+
 				try {
 					writer.writeObject(new ChatMessage(ChatMessage.MsgType.NEXT, user,opponentName,totalScore,level));
 					writer.flush();
@@ -388,6 +405,27 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 	}
 	public int getScore(){
 		return totalScore;
+	}
+	public void hindrance(){
+		opHind = 5;
+		hindTimer.start();
+		System.out.println("ddd");
+	}
+
+	private class HindButtonHandler implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			if(hind == 0){
+				try {
+					writer.writeObject(new ChatMessage(ChatMessage.MsgType.HINDRANCE, user,opponentName,""));
+					writer.flush();
+				} catch(Exception ex) {
+					ex.printStackTrace();
+				}	
+				hind++;
+			}
+		}
 	}
 }//class
 

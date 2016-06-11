@@ -269,6 +269,12 @@ public class ChatClient {
 						users[0] =  ChatMessage.ALL;	// 리스트 맨 앞에 "전체"가 들어가도록 함
 						so.setCounterParts(users);
 					}
+					else if(type == ChatMessage.MsgType.HINDRANCE){
+						if(Level==1) Level1.hindrance();
+						else if(Level==2) Level2.hindrance();
+						else if(Level==3) Level3.hindrance();
+						else Level4.hindrance();
+					}
 					else {
 						System.out.println(type);
 						throw new Exception("서버에서 알 수 없는 메시지 도착했음");
