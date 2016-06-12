@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -22,7 +23,9 @@ public class ResultPanel extends JPanel{
 	private String user;
 	private ObjectOutputStream writer;
 	private SelectOpponent so;
-	public ResultPanel(String result,JFrame frame,String user,ObjectOutputStream writer,SelectOpponent so){
+	private int opScore;
+	private int myScore;
+	public ResultPanel(String result,JFrame frame,String user,ObjectOutputStream writer,SelectOpponent so,int opScore,int myScore){
 		if(result.equals("win")){
 			resultImage = new PosImageIcon("승리.jpg", 0, 0, 1200, 850);
 			System.out.println("이김");
@@ -35,13 +38,14 @@ public class ResultPanel extends JPanel{
 		this.frame = frame;
 		this.user = user;
 		this.writer = writer;
+		this.opScore = opScore;
+		this.myScore = myScore;
 		setUpGUI();
 	}
 	private void setUpGUI(){
 		this.repaint();
 		this.setLayout(null);
-		System.out.println("setup");
-		exitButton = new JButton("종료");
+		exitButton = new JButton();
 		exitButton.setBounds(150, 350, 200, 100);
 		exitButton.setOpaque(false);
 		exitButton.setContentAreaFilled(false);
@@ -55,7 +59,7 @@ public class ResultPanel extends JPanel{
 		});
 		this.add(exitButton);
 		
-		regameButton = new JButton("재시작");
+		regameButton = new JButton();
 		regameButton.setBounds(850, 350, 300, 100);
 		regameButton.setOpaque(false);
 		regameButton.setContentAreaFilled(false);
@@ -81,6 +85,12 @@ public class ResultPanel extends JPanel{
 			}
 		});
 		this.add(regameButton);
+		
+		JLabel label = new JLabel();
+		label.setBounds(550, 100, 300, 50);
+		label.setText("내점수: "+myScore + " 상대점수: "+opScore);
+		label.setOpaque(false);
+		this.add(label);
 	}
 	@Override
 	protected void paintComponent(Graphics g) {

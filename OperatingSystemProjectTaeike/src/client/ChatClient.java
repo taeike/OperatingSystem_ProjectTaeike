@@ -291,10 +291,10 @@ public class ChatClient {
 			so = new SelectOpponent(user, frame, writer);
 			if(message.getScore() < Level4.getScore()){
 				System.out.println("ÀÌ±ט");
-				result = new ResultPanel("win", frame, message.getReceiver(), writer,so);
+				result = new ResultPanel("win", frame, message.getReceiver(), writer,so,message.getScore(),Level4.getScore());
 			}
 			else{
-				result = new ResultPanel("lose", frame, message.getReceiver(), writer,so);
+				result = new ResultPanel("lose", frame, message.getReceiver(), writer,so,message.getScore(),Level4.getScore());
 			}
 			result.setBounds(0, 0, 1200, 850);
 			result.setLayout(null);
