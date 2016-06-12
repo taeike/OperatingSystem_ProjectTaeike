@@ -106,6 +106,28 @@ public class SelectOpponent {
 		}
 	});
     
+    JButton logOut = new JButton();
+    logOut.setBounds(0,0, 200, 200);
+    logOut.setOpaque(false);
+    logOut.setContentAreaFilled(false);
+    logOut.setBorderPainted(false);
+    logOut.addActionListener(new ActionListener() {
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			try {
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGOUT, user,"",""));
+				writer.flush();
+				frame.setVisible(false);
+				frame = null;
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}	
+		}
+	});
+    
+    
    mainPanel = new JPanel(){
     	@Override
     	protected void paintComponent(Graphics g) {
@@ -123,7 +145,7 @@ public class SelectOpponent {
   
     mainPanel.add(sendButton);
     mainPanel.add(messageSendButton);
- 
+    mainPanel.add(logOut);
     mainPanel.add( cScroller);
     mainPanel.setBounds(0, 0, 1200, 850);
    

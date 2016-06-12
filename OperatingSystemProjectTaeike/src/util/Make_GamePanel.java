@@ -122,6 +122,9 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 
 		hinButton.setBounds(910,778,30,30);
 		hinButton.addActionListener(new HindButtonHandler());
+		hinButton.setOpaque(false);
+		hinButton.setContentAreaFilled(false);
+		hinButton.setBorderPainted(false);
 		this.add(hinButton);
 
 		progressBarTimer = new Timer(1000,new TimeBar());
@@ -407,7 +410,7 @@ public class Make_GamePanel extends JPanel implements ActionListener{
 		return totalScore;
 	}
 	public void hindrance(){
-		opHind = 5;
+		opHind = 10;
 		hindTimer.start();
 		System.out.println("ddd");
 	}

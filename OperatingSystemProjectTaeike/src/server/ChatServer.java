@@ -66,7 +66,7 @@ public class ChatServer {
 				while (true) {
 					// 읽은 메시지의 종류에 따라 각각 할일이 정해져 있음
 					message = (ChatMessage) reader.readObject();	  // 클라이언트의 전송 메시지 받음
-
+					
 					type = message.getType();
 					if (type == ChatMessage.MsgType.LOGIN) {		  // 클라이언트 로그인 요청
 						handleLogin(message.getSender(),writer);	  // 클아이언트 이름과 그에게 메시지를
@@ -74,7 +74,7 @@ public class ChatServer {
 					}
 					else if (type == ChatMessage.MsgType.LOGOUT) {	  // 클라이언트 로그아웃 요청
 						handleLogout(message.getSender());			  // 등록된 이름 및 이와 연결된 스트림 삭제
-						writer.close(); reader.close(); sock.close(); // 이 클라이언트와 관련된 스트림들 닫기
+						//writer.close(); reader.close(); sock.close(); // 이 클라이언트와 관련된 스트림들 닫기
 						return;										  // 스레드 종료
 					}
 					else if (type == ChatMessage.MsgType.CLIENT_MSG) {
